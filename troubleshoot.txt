@@ -1,0 +1,40 @@
+lsnrctl start - start the listener  --open cmd in admin and paste
+
+<<--for stubborn cases, this should work-->> (thanks to stack overflow)
+sqlplus /nolog  
+conn system  
+alter system set local_listener = '(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))' scope = both;  
+alter system register;  
+exit  
+lsnrctl status
+
+--or   alter system set local_listener = ...
+
+
+alter session set "_ORACLE_SCRIPT"=true;   -- to create new user on sqlplus
+create user train identified by oracle;  --oracle is the password
+grant sysdba to train;   --granting major role.
+grant create session  to train;
+grant create any table to train;
+grant create view, create procedure, create sequence to train;
+GRANT UNLIMITED TABLESPACE TO train;
+
+grant  create any cluster to clusterr;  	--privilege for creating a cluster(granted by sysdba)
+grant select on order_details to clusterr; 	--this privilege must be granted by the user that owns the object, and not sysdba
+grant select on payment_details to clusterr; 	--same as this
+grant create any table to clusterr;		--and this
+grant select any table to clusterr;		--and this
+
+
+ DD-MON-YY -- oracle date format
+INSERT INTO category
+    WITH c AS ( 
+        SELECT 1, 'Screwdriver', 'for use', '01-jan-2013' FROM dual UNION ALL 
+        SELECT 2, 'tie', 'for use', '01-nov-2003' FROM dual UNION ALL 
+        SELECT 3, 'Coffee Cup', 'for use', '11-jun-2013' FROM dual UNION ALL 
+        SELECT 4, 'chair', 'for use', '01-dec-2013' FROM dual UNION ALL
+        SELECT 7, 'Beer', 'for use', '01-jul-2012' FROM dual
+  )
+SELECT * FROM c;    --- correct syntax to insert multiple rows
+
+bad-bind 'variable' and 'mutating' errors are caused by wrong table_name or column names
